@@ -174,7 +174,9 @@ IN THE SOFTWARE.*/
         // fetch ye olde values
         var attr = oldToJson.call(this),
             isSaving,
-            isTransient;
+            isTransient,
+            changed;
+        changed = this.changedComputeds = this.changedComputeds || {};
         // iterate over all mutators (if there are some)
         _.each(this.mutators, _.bind(function (mutator, name) {
             // check if we have some getter mutations
@@ -183,9 +185,11 @@ IN THE SOFTWARE.*/
                 isTransient = this.mutators[name].transient;
                 if (!isSaving || !isTransient) {
                   attr[name] = _.bind(this.mutators[name].get, this)();
+                  changed[name] = attr[name];
                 }
             } else if (_.isFunction(this.mutators[name])) {
                 attr[name] = _.bind(this.mutators[name], this)();
+                changed[name] = attr[name];
             }
         }, this));
 
